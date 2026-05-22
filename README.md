@@ -57,17 +57,6 @@ The original USDA NASS dataset (place in repo root if you wish to include it).
 
 ---
 
-## Hosting on GitHub Pages
-
-To publish the live dashboard:
-
-1. Go to your repository **Settings → Pages**
-2. Under **Source**, select `main` branch and `/ (root)` folder
-3. Click **Save**
-4. Your dashboard will be live at `https://<your-username>.github.io/<repo-name>/`
-
----
-
 ## Data Definitions
 
 | Term | Definition |
