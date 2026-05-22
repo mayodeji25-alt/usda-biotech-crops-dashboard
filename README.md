@@ -2,7 +2,7 @@
 
 An interactive data dashboard visualising the adoption of genetically engineered (GE) crop varieties across the United States, based on USDA survey data.
 
-[![Live Dashboard](https://img.shields.io/badge/Dashboard-Live-2E7D32?style=for-the-badge&logo=github)](https://your-username.github.io/usda-biotech-crops-dashboard/)
+[![Live Dashboard](https://img.shields.io/badge/Dashboard-Live-2E7D32?style=for-the-badge&logo=github)]([https://your-username.github.io/usda-biotech-crops-dashboard/](https://mayodeji25-alt.github.io/usda-biotech-crops-dashboard/)
 ![Data Year](https://img.shields.io/badge/Data%20Year-2025-1B4332?style=for-the-badge)
 ![Crops](https://img.shields.io/badge/Crops-Corn%20%7C%20Cotton%20%7C%20Soybean-F57C00?style=for-the-badge)
 
