@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USDA Biotech Crops Adoption Dashboard 2025</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f4f6f2;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.08);
+    --text-primary: #1a1a1a;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --corn: #E65100;
+    --corn-mid: #F57C00;
+    --corn-lite: #FFB74D;
+    --cot: #0277BD;
+    --cot-mid: #0288D1;
+    --cot-lite: #4FC3F7;
+    --soy: #2E7D32;
+    --soy-mid: #388E3C;
+    --soy-lite: #81C784;
+    --forest: #1B4332;
+    --forest-mid: #2D6A4F;
+    --mint: #74C69D;
+    --pale-mint: #D8F3DC;
+    --grid-c: rgba(0,0,0,0.06);
+    --tick-c: rgba(0,0,0,0.45);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161b22;
+      --surface: #1f2937;
+      --border: rgba(255,255,255,0.1);
+      --text-primary: #f0f0f0;
+      --text-secondary: #aaa;
+      --text-muted: #666;
+      --grid-c: rgba(255,255,255,0.07);
+      --tick-c: rgba(255,255,255,0.4);
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text-primary); padding: 1.5rem; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  .banner { background: var(--forest); color: #fff; padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.25rem; }
+  .banner h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+  .banner p { font-size: 12px; color: var(--mint); }
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.25rem; }
+  @media (max-width: 700px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
+  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; border-top: 4px solid; }
+  .kpi-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .kpi-value { font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); }
+  .section-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin: 1.5rem 0 0.75rem; }
+  .insight-band { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media (max-width: 700px) { .insight-band { grid-template-columns: 1fr; } }
+  .ins { border-left: 3px solid; padding-left: 12px; }
+  .ins-label { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+  .ins-val { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .chart-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.25rem; }
+  @media (max-width: 900px) { .chart-grid-3 { grid-template-columns: 1fr; } }
+  .chart-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 1.25rem; }
+  @media (max-width: 700px) { .chart-grid-2 { grid-template-columns: 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; }
+  .card-full { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; margin-bottom: 1.25rem; }
+  .chart-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+  .chart-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; font-size: 11px; color: var(--text-secondary); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 5px; vertical-align: middle; }
+  .footer { margin-top: 2rem; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 1rem; }
+  .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>&#127807; USDA Biotech Crops Adoption Dashboard &middot; 2025</h1>
+  <p>Source: USDA National Agricultural Statistics Service (NASS) &mdash; June Agricultural Survey 2025 &nbsp;&middot;&nbsp; Corn &middot; Cotton &middot; Soybean &middot; State-level GE variety adoption</p>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi" style="border-top-color:#E65100;">
+    <div class="kpi-label">Corn &mdash; All GE</div>
+    <div class="kpi-value" style="color:#E65100;">94%</div>
+    <div class="kpi-sub">of U.S. corn acres planted</div>
+  </div>
+  <div class="kpi" style="border-top-color:#F57C00;">
+    <div class="kpi-label">Corn &mdash; Stacked gene</div>
+    <div class="kpi-value" style="color:#F57C00;">84%</div>
+    <div class="kpi-sub">Bt + HT combined varieties</div>
+  </div>
+  <div class="kpi" style="border-top-color:#0277BD;">
+    <div class="kpi-label">Cotton &mdash; All GE</div>
+    <div class="kpi-value" style="color:#0277BD;">97%</div>
+    <div class="kpi-sub">of U.S. cotton acres planted</div>
+  </div>
+  <div class="kpi" style="border-top-color:#2E7D32;">
+    <div class="kpi-label">Soybean &mdash; All GE</div>
+    <div class="kpi-value" style="color:#2E7D32;">96%</div>
+    <div class="kpi-sub">of U.S. soybean acres planted</div>
+  </div>
+</div>
+
+<div class="insight-band">
+  <div class="ins" style="border-color:#E65100;">
+    <div class="ins-label">Dominant corn strategy</div>
+    <div class="ins-val">Stacked (Bt+HT) at 84% &mdash; farmers overwhelmingly use dual-trait seed</div>
+  </div>
+  <div class="ins" style="border-color:#0277BD;">
+    <div class="ins-label">Highest single-state GE</div>
+    <div class="ins-val">Cotton in AL, AR, GA, LA, MO, TN &mdash; all at 99% adoption</div>
+  </div>
+  <div class="ins" style="border-color:#2E7D32;">
+    <div class="ins-label">Soybean near saturation</div>
+    <div class="ins-val">HT soybeans at 96% &mdash; virtually all GE, no Bt variety deployed</div>
+  </div>
+</div>
+
+<p class="section-label">Trait mix &mdash; United States 2025</p>
+<div class="chart-grid-3">
+  <div class="card">
+    <div class="badge" style="background:#FFF3E0;color:#E65100;">Corn</div>
+    <div class="chart-title">Corn trait composition</div>
+    <div class="chart-sub">% of all corn planted</div>
+    <div class="legend-row">
+      <span><span class="leg-dot" style="background:#FFB74D"></span>Bt only 3%</span>
+      <span><span class="leg-dot" style="background:#F57C00"></span>HT only 8%</span>
+      <span><span class="leg-dot" style="background:#E65100"></span>Stacked 84%</span>
+      <span><span class="leg-dot" style="background:#BDBDBD"></span>Non-GE 6%</span>
+    </div>
+    <div style="position:relative;height:220px;">
+      <canvas id="cPie"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="badge" style="background:#E1F5FE;color:#0277BD;">Cotton</div>
+    <div class="chart-title">Cotton trait composition</div>
+    <div class="chart-sub">% of all upland cotton planted</div>
+    <div class="legend-row">
+      <span><span class="leg-dot" style="background:#4FC3F7"></span>Bt only 4%</span>
+      <span><span class="leg-dot" style="background:#0288D1"></span>HT only 6%</span>
+      <span><span class="leg-dot" style="background:#01579B"></span>Stacked 87%</span>
+      <span><span class="leg-dot" style="background:#BDBDBD"></span>Non-GE 3%</span>
+    </div>
+    <div style="position:relative;height:220px;">
+      <canvas id="cotPie"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="badge" style="background:#E8F5E9;color:#2E7D32;">Soybean</div>
+    <div class="chart-title">Soybean trait composition</div>
+    <div class="chart-sub">% of all soybeans planted</div>
+    <div class="legend-row">
+      <span><span class="leg-dot" style="background:#43A047"></span>HT only 96%</span>
+      <span><span class="leg-dot" style="background:#BDBDBD"></span>Non-GE 4%</span>
+    </div>
+    <div style="position:relative;height:220px;">
+      <canvas id="soyPie"></canvas>
+    </div>
+  </div>
+</div>
+
+<p class="section-label">Crop comparison &mdash; All GE adoption by trait type</p>
+<div class="card-full">
+  <div class="chart-title">GE adoption &mdash; Corn, Cotton &amp; Soybean by trait</div>
+  <div class="chart-sub">% of planted acres, United States 2025</div>
+  <div class="legend-row">
+    <span><span class="leg-dot" style="background:#E65100"></span>Corn</span>
+    <span><span class="leg-dot" style="background:#0277BD"></span>Cotton</span>
+    <span><span class="leg-dot" style="background:#2E7D32"></span>Soybean</span>
+  </div>
+  <div style="position:relative;height:260px;">
+    <canvas id="compareBar"></canvas>
+  </div>
+</div>
+
+<p class="section-label">All GE adoption by state &mdash; ranked 2025</p>
+<div class="chart-grid-3">
+  <div class="card">
+    <div class="badge" style="background:#FFF3E0;color:#E65100;">Corn</div>
+    <div class="chart-title">All GE corn by state</div>
+    <div class="chart-sub">% of corn planted, 2025</div>
+    <div style="position:relative;height:560px;">
+      <canvas id="cornBar"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="badge" style="background:#E1F5FE;color:#0277BD;">Cotton</div>
+    <div class="chart-title">All GE cotton by state</div>
+    <div class="chart-sub">% of upland cotton planted, 2025</div>
+    <div style="position:relative;height:560px;">
+      <canvas id="cotBar"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="badge" style="background:#E8F5E9;color:#2E7D32;">Soybean</div>
+    <div class="chart-title">All GE soybean by state</div>
+    <div class="chart-sub">% of soybeans planted, 2025</div>
+    <div style="position:relative;height:560px;">
+      <canvas id="soyBar"></canvas>
+    </div>
+  </div>
+</div>
+
+<p class="section-label">Corn stacked gene traits by state</p>
+<div class="card-full">
+  <div class="chart-title">Corn trait breakdown by state &mdash; Bt only &middot; HT only &middot; Stacked gene</div>
+  <div class="chart-sub">% of corn planted per state, stacked bars, 2025</div>
+  <div class="legend-row">
+    <span><span class="leg-dot" style="background:#FFB74D"></span>Bt only</span>
+    <span><span class="leg-dot" style="background:#F57C00"></span>HT only</span>
+    <span><span class="leg-dot" style="background:#E65100"></span>Stacked</span>
+  </div>
+  <div style="position:relative;height:280px;">
+    <canvas id="cornStack"></canvas>
+  </div>
+</div>
+
+<p class="section-label">Cotton trait breakdown by state</p>
+<div class="card-full">
+  <div class="chart-title">Cotton trait breakdown by state &mdash; Bt only &middot; HT only &middot; Stacked gene</div>
+  <div class="chart-sub">% of upland cotton planted per state, stacked bars, 2025</div>
+  <div class="legend-row">
+    <span><span class="leg-dot" style="background:#4FC3F7"></span>Bt only</span>
+    <span><span class="leg-dot" style="background:#0288D1"></span>HT only</span>
+    <span><span class="leg-dot" style="background:#01579B"></span>Stacked</span>
+  </div>
+  <div style="position:relative;height:260px;">
+    <canvas id="cotStack"></canvas>
+  </div>
+</div>
+
+<div class="footer">
+  <strong>Data source:</strong> USDA National Agricultural Statistics Service (NASS) &mdash; June Agricultural Survey 2025.<br>
+  USDA Economic Research Service does not modify NASS Acreage report data.<br>
+  GE = Genetically Engineered &nbsp;&middot;&nbsp; HT = Herbicide-Tolerant &nbsp;&middot;&nbsp; Bt = Insect-Resistant (Bacillus thuringiensis) &nbsp;&middot;&nbsp; Stacked = Bt + HT combined.
+</div>
+
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridC = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+const tickC = isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.5)';
+
+Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+Chart.defaults.font.size = 11;
+Chart.defaults.color = tickC;
+
+const pieOpts = () => ({
+  responsive: true, maintainAspectRatio: false, cutout: '55%',
+  plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + '%' } } }
+});
+
+new Chart(document.getElementById('cPie'), {
+  type: 'doughnut',
+  data: { labels: ['Bt only','HT only','Stacked','Non-GE'], datasets: [{ data: [3,8,84,6], backgroundColor: ['#FFB74D','#F57C00','#E65100','#BDBDBD'], borderWidth: 2, borderColor: isDark ? '#1f2937' : '#fff' }] },
+  options: pieOpts()
+});
+
+new Chart(document.getElementById('cotPie'), {
+  type: 'doughnut',
+  data: { labels: ['Bt only','HT only','Stacked','Non-GE'], datasets: [{ data: [4,6,87,3], backgroundColor: ['#4FC3F7','#0288D1','#01579B','#BDBDBD'], borderWidth: 2, borderColor: isDark ? '#1f2937' : '#fff' }] },
+  options: pieOpts()
+});
+
+new Chart(document.getElementById('soyPie'), {
+  type: 'doughnut',
+  data: { labels: ['HT only (GE)','Non-GE'], datasets: [{ data: [96,4], backgroundColor: ['#43A047','#BDBDBD'], borderWidth: 2, borderColor: isDark ? '#1f2937' : '#fff' }] },
+  options: pieOpts()
+});
+
+new Chart(document.getElementById('compareBar'), {
+  type: 'bar',
+  data: {
+    labels: ['Bt only','HT only','Stacked gene','All GE'],
+    datasets: [
+      { label: 'Corn',    data: [3,8,84,94],       backgroundColor: '#E65100', borderRadius: 4 },
+      { label: 'Cotton',  data: [4,6,87,97],       backgroundColor: '#0277BD', borderRadius: 4 },
+      { label: 'Soybean', data: [null,96,null,96], backgroundColor: '#2E7D32', borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw !== null ? ' ' + ctx.dataset.label + ': ' + ctx.raw + '%' : ' No data' } } },
+    scales: {
+      x: { grid: { color: gridC }, ticks: { color: tickC } },
+      y: { min: 0, max: 100, grid: { color: gridC }, ticks: { color: tickC, callback: v => v + '%' } }
+    }
+  }
+});
+
+const hBarOpts = (min, max) => ({
+  responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+  plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.parsed.x + '%' } } },
+  scales: {
+    x: { min, max, grid: { color: gridC }, ticks: { color: tickC, callback: v => v + '%' } },
+    y: { grid: { display: false }, ticks: { color: tickC, font: { size: 10 } } }
+  }
+});
+
+const cornStates = ['Indiana','Ohio','Texas','Wisconsin','Michigan','North Dakota','Minnesota','Missouri','Illinois','Nebraska','Iowa','Kansas','South Dakota'];
+const cornVals   = [88,89,89,91,91,93,95,95,94,96,96,96,97];
+const cornSorted = cornStates.map((s,i)=>({s,v:cornVals[i]})).sort((a,b)=>a.v-b.v);
+new Chart(document.getElementById('cornBar'), {
+  type: 'bar',
+  data: { labels: cornSorted.map(d=>d.s), datasets: [{ data: cornSorted.map(d=>d.v), backgroundColor: cornSorted.map(d=>d.v>=96?'#E65100':d.v>=93?'#F57C00':'#FFB74D'), borderRadius: 3 }] },
+  options: hBarOpts(80, 100)
+});
+
+const cotStates = ['California','North Carolina','Texas','Mississippi','Alabama','Arkansas','Georgia','Louisiana','Missouri','Tennessee'];
+const cotVals   = [89,94,96,98,99,99,99,99,99,99];
+const cotSorted = cotStates.map((s,i)=>({s,v:cotVals[i]})).sort((a,b)=>a.v-b.v);
+new Chart(document.getElementById('cotBar'), {
+  type: 'bar',
+  data: { labels: cotSorted.map(d=>d.s), datasets: [{ data: cotSorted.map(d=>d.v), backgroundColor: cotSorted.map(d=>d.v>=99?'#01579B':d.v>=97?'#0288D1':'#4FC3F7'), borderRadius: 3 }] },
+  options: hBarOpts(80, 100)
+});
+
+const soyStates = ['Kansas','Wisconsin','Minnesota','Indiana','Ohio','Missouri','Nebraska','North Dakota','Michigan','Illinois','Iowa','South Dakota','Arkansas','Mississippi'];
+const soyVals   = [94,94,95,95,95,96,96,96,96,96,97,97,97,98];
+const soySorted = soyStates.map((s,i)=>({s,v:soyVals[i]})).sort((a,b)=>a.v-b.v);
+new Chart(document.getElementById('soyBar'), {
+  type: 'bar',
+  data: { labels: soySorted.map(d=>d.s), datasets: [{ data: soySorted.map(d=>d.v), backgroundColor: soySorted.map(d=>d.v>=98?'#1B5E20':d.v>=97?'#2E7D32':d.v>=96?'#388E3C':'#43A047'), borderRadius: 3 }] },
+  options: hBarOpts(90, 100)
+});
+
+const cornStackStates = ['Illinois','Indiana','Iowa','Kansas','Michigan','Minnesota','Missouri','Nebraska','North Dakota','Ohio','South Dakota','Texas','Wisconsin'];
+new Chart(document.getElementById('cornStack'), {
+  type: 'bar',
+  data: {
+    labels: cornStackStates,
+    datasets: [
+      { label: 'Bt only',  data: [2,2,3,1,2,3,2,4,4,2,2,3,2], backgroundColor: '#FFB74D', stack: 'a' },
+      { label: 'HT only',  data: [4,7,6,7,8,6,5,7,9,9,7,7,9], backgroundColor: '#F57C00', stack: 'a' },
+      { label: 'Stacked',  data: [88,79,87,88,81,86,88,85,80,78,88,79,80], backgroundColor: '#E65100', stack: 'a' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { mode: 'index', callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.raw + '%' } } },
+    scales: {
+      x: { stacked: true, grid: { color: gridC }, ticks: { color: tickC, maxRotation: 35, font: { size: 10 } } },
+      y: { stacked: true, min: 0, max: 100, grid: { color: gridC }, ticks: { color: tickC, callback: v => v + '%' } }
+    }
+  }
+});
+
+const cotStackStates = ['Alabama','Arkansas','California','Georgia','Louisiana','Mississippi','Missouri','North Carolina','Tennessee','Texas'];
+new Chart(document.getElementById('cotStack'), {
+  type: 'bar',
+  data: {
+    labels: cotStackStates,
+    datasets: [
+      { label: 'Bt only',  data: [3,2,5,4,4,5,3,4,3,4], backgroundColor: '#4FC3F7', stack: 'a' },
+      { label: 'HT only',  data: [4,5,4,5,7,6,4,4,5,5], backgroundColor: '#0288D1', stack: 'a' },
+      { label: 'Stacked',  data: [92,92,80,90,88,87,92,86,91,87], backgroundColor: '#01579B', stack: 'a' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { mode: 'index', callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.raw + '%' } } },
+    scales: {
+      x: { stacked: true, grid: { color: gridC }, ticks: { color: tickC, maxRotation: 35, font: { size: 10 } } },
+      y: { stacked: true, min: 0, max: 100, grid: { color: gridC }, ticks: { color: tickC, callback: v => v + '%' } }
+    }
+  }
+});
+</script>
+</body>
+</html>
