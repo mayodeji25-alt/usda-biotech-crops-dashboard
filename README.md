@@ -46,11 +46,4 @@ This dashboard summarises the adoption of herbicide-tolerant (HT) and insect-res
 
 ```
 
-
-## License
-
-Data is public domain (U.S. Government work — USDA NASS). Dashboard code and visualisation are released under the [MIT License](LICENSE).
-
----
-
 *Dashboard generated May 2026. Data reflects USDA NASS June Agricultural Survey 2025 results.*
