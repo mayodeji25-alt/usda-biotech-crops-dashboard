@@ -33,27 +33,6 @@ This dashboard summarises the adoption of herbicide-tolerant (HT) and insect-res
 
 ---
 
-## Dashboard Contents
-
-### `index.html` — Interactive Web Dashboard
-A fully self-contained HTML/JavaScript dashboard built with [Chart.js](https://www.chartjs.org/). No server required — open locally or host on GitHub Pages.
-
-**Charts included:**
-- KPI summary cards (national adoption rates)
-- Doughnut charts — trait composition per crop (Bt only / HT only / Stacked / Non-GE)
-- Grouped bar chart — trait-type comparison across all three crops
-- Horizontal ranked bar charts — All GE adoption by state for each crop (colour-coded by adoption tier)
-- Stacked bar charts — trait breakdown by state for corn and cotton
-
-### `USDA_Biotech_Crops_Dashboard_2025.xlsx` — Excel Workbook
-A multi-sheet Excel workbook with:
-- Executive dashboard with KPI cards and summary tables
-- Per-crop detail sheets (Corn, Cotton, Soybean) with state-level data tables
-- Embedded bar and pie charts
-- Raw data sheet for full traceability
-
----
-
 ## Data Source
 
 - **Primary source**: [USDA NASS Acreage Report 2025](https://esmis.nal.usda.gov/publication/acreage)
@@ -67,11 +46,11 @@ A multi-sheet Excel workbook with:
 
 ```
 
----
 
 ## License
 
 Data is public domain (U.S. Government work — USDA NASS). Dashboard code and visualisation are released under the [MIT License](LICENSE).
+
 
 ---
 
