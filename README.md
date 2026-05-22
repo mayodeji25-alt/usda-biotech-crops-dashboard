@@ -52,21 +52,6 @@ A multi-sheet Excel workbook with:
 - Embedded bar and pie charts
 - Raw data sheet for full traceability
 
-### `biotech-crops-all-tables-2025.csv` — Source Data
-The original USDA NASS dataset (place in repo root if you wish to include it).
-
----
-
-## Data Definitions
-
-| Term | Definition |
-|------|-----------|
-| **GE** | Genetically Engineered — crops with DNA altered via biotechnology |
-| **HT** | Herbicide-Tolerant — engineered to survive specific herbicide applications |
-| **Bt** | Insect-Resistant — carries genes from *Bacillus thuringiensis* bacteria to produce insect-repelling proteins |
-| **Stacked** | Varieties combining both HT and Bt traits in a single seed |
-| **All GE** | Sum of all GE variety types (Bt only + HT only + Stacked) |
-
 ---
 
 ## Data Source
@@ -79,16 +64,7 @@ The original USDA NASS dataset (place in repo root if you wish to include it).
 
 > USDA does not collect or disseminate information about global GE seed use. For global estimates, see the [ISAAA Global Status of Commercialized Biotech/GM Crops](https://www.isaaa.org/) reports.
 
----
 
-## Repository Structure
-
-```
-usda-biotech-crops-dashboard/
-├── index.html                              # Interactive web dashboard
-├── USDA_Biotech_Crops_Dashboard_2025.xlsx  # Excel workbook
-├── biotech-crops-all-tables-2025.csv       # Source data (USDA NASS)
-└── README.md                               # This file
 ```
 
 ---
@@ -99,4 +75,4 @@ Data is public domain (U.S. Government work — USDA NASS). Dashboard code and v
 
 ---
 
-*Dashboard generated May 2025. Data reflects USDA NASS June Agricultural Survey 2025 results.*
+*Dashboard generated May 2026. Data reflects USDA NASS June Agricultural Survey 2025 results.*
